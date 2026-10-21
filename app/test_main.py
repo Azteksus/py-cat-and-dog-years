@@ -1,24 +1,44 @@
-from app.main import get_human_age
+import pytest
 
 
-def test_on_zero():
-    assert get_human_age(0, 0) == [0, 0]
-    assert get_human_age(14, 14) == [0, 0]
+@pytest.mark.parametrize(
+    "cat_age,dog_age,expected",
+    [
+        (-1, -1, [0, 0]),
+        (0, 0, [0, 0]),
+        (14, 14, [0, 0]),
+        (15, 15, [1, 1]),
+        (23, 23, [1, 1]),
+        (24, 24, [2, 2]),
+        (27, 28, [2, 2]),
+        (28, 29, [3, 3]),
+        (100, 100, [21, 17]),
+    ],
+)
+def test_get_human_age(
+    cat_age: int,
+    dog_age: int,
+    expected: list[int],
+) -> None:
+    from app.main import get_human_age
+
+    assert get_human_age(cat_age, dog_age) == expected
 
 
-def test_on_one():
-    assert get_human_age(15, 15) == [1, 1]
-    assert get_human_age(23, 23) == [1, 1]
+@pytest.mark.parametrize(
+    "cat_age,dog_age",
+    [
+        ("15", 15),
+        (15, "15"),
+        (None, 15),
+        (15, None),
+    ],
+)
+def test_invalid_types(
+    cat_age: int | str | None,
+    dog_age: int | str | None,
+) -> None:
+    from app.main import get_human_age
 
-
-def test_on_two():
-    assert get_human_age(24, 24) == [2, 2]
-    assert get_human_age(27, 28) == [2, 2]
-
-
-def test_on_three():
-    assert get_human_age(28, 29) == [3, 3]
-
-
-def test_on_100():
-    assert get_human_age(100, 100) == [21, 17]
+    with pytest.raises(TypeError):
+        get_human_age(cat_age, dog_age)
